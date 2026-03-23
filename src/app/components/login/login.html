@@ -1,0 +1,27 @@
+<div class="vh-100 d-flex justify-content-center align-items-center bg-light px-3">
+  
+  <div class="card shadow-sm border-0 w-100" style="max-width: 400px;">
+    
+    <div class="card-body p-5 text-center">
+      
+      <div class="mb-4">
+        <img src="https://www.noxium.es/wp-content/uploads/2022/11/logo_noxium_2010_color-300x70.png" class="img-fluid" alt="Logo Noxium" style="max-width: 180px;">
+      </div>
+      
+      <h5 class="text-dark fw-bold mb-4">Inicio de sesión</h5>
+      
+      <div class="mb-3 text-start">
+        <label class="form-label fw-medium text-secondary small mb-1">Correo electrónico</label>
+        <input type="email" class="form-control form-control-lg input-noxium fs-6" [(ngModel)]="correo" placeholder="ejemplo@noxium.com" (keyup.enter)="entrar()">
+      </div>
+
+      <div class="mb-4 text-start">
+        <label class="form-label fw-medium text-secondary small mb-1">Contraseña</label>
+        <input type="password" class="form-control form-control-lg input-noxium fs-6" [(ngModel)]="contrasena" placeholder="Introduce tu contraseña" (keyup.enter)="entrar()">
+      </div>
+      
+      <button class="btn btn-noxium w-100 py-2 fw-bold" (click)="entrar()">Entrar al sistema</button>
+      
+    </div>
+  </div>
+</div>

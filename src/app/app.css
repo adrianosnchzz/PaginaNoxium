@@ -1,0 +1,46 @@
+
+.dashboard-contenedor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+  width: 100vw;  
+  overflow: hidden; 
+  background-color: #f4f7f9; 
+}
+
+
+.dashboard-cabecera {
+  width: 100%;
+  flex-shrink: 0; 
+  background-color: #ffffff; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+  z-index: 10; 
+}
+
+
+
+.dashboard-cuerpo {
+  display: flex;
+  flex: 1; 
+  padding: 30px; /* Separación de los bordes de la pantalla */
+  gap: 20px; /* Separación exacta entre la tarjeta azul y la tabla blanca */
+  background-color: #f4f7f9;
+  
+  /* Obliga a las dos tarjetas a pegarse arriba del todo */
+  align-items: flex-start; 
+  
+  overflow-y: auto; 
+}
+
+/* El hueco de la tarjeta izquierda */
+.dashboard-lateral {
+  width: 250px; 
+  flex-shrink: 0;
+}
+
+/* El hueco de la tabla derecha */
+.dashboard-contenido {
+  flex: 1;
+  padding: 0; 
+  overflow: visible; 
+}

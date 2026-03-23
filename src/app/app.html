@@ -1,0 +1,18 @@
+<ng-container *ngIf="!mostrarMenu()">
+  <router-outlet></router-outlet>
+</ng-container>
+
+<div class="container-fluid vh-100 bg-light p-4" *ngIf="mostrarMenu()">
+  
+  <div class="row h-100">
+    
+    <aside class="col-md-3 col-lg-2">
+      <app-panel-lateral></app-panel-lateral>
+    </aside>
+
+    <main class="col h-100">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>
