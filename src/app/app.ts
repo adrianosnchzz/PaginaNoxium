@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
-import { PanelLateral } from './components/panel-lateral/panel-lateral'; 
+
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, PanelLateral  ], 
+  imports: [CommonModule, RouterOutlet  ], 
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

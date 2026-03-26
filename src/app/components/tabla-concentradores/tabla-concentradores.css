@@ -3,14 +3,14 @@
   min-width: 0; 
 }
 
-/* Forzamos el color corporativo en la cabecera por encima de Bootstrap */
+
 .cabecera-noxium th {
   background-color: #1a365d !important;
   color: white !important;
   border-bottom: none;
 }
 
-/* Evitamos que los inputs de filtro se hagan gigantes */
+
 .filtro-input {
   max-width: 110px;
   min-width: 50px;
@@ -18,7 +18,7 @@
   color: #6c757d;
 }
 
-/* Pequeño toque visual a los inputs bloqueados (readonly) */
+
 .filtro-input[readonly] {
   color: #adb5bd;
 }

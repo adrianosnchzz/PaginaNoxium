@@ -9,9 +9,10 @@ import { AuthService } from '../../auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './login.html' // Conectado a tu HTML
+  templateUrl: './login.html', 
+  styleUrls: ['./login.css']
 })
-export class LoginComponent { // ESTE es el nombre que vamos a exportar
+export class LoginComponent {
   
   // Variables mapeadas a tu HTML
   correo: string = '';
@@ -30,7 +31,7 @@ export class LoginComponent { // ESTE es el nombre que vamos a exportar
 
     this.cargando = true;
     
-    // OJO: Le pasamos 'correo' y 'contrasena' al servicio
+    
     this.authService.login(this.correo, this.contrasena).subscribe({
       next: (res) => {
         console.log('¡Login exitoso!', res);

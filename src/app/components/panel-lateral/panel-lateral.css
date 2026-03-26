@@ -1,9 +1,0 @@
-:host {
-  display: block; 
-  width: 100%;
-}
-
-/* Esto para que el panel lateral siga siendo largo */
-.card {
-  min-height: 600px;
-}

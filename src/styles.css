@@ -1,4 +1,22 @@
+@import '../node_modules/@swimlane/ngx-datatable/index.css';
+@import '../node_modules/@swimlane/ngx-datatable/themes/bootstrap.css';
+@import '../node_modules/@swimlane/ngx-datatable/assets/icons.css';
+
 body {
   margin: 0;
   padding: 0;
+}
+
+.ngx-datatable.bootstrap .datatable-footer {
+  background-color: #1a365d !important;
+  color: white !important;
+}
+
+.ngx-datatable.bootstrap .datatable-footer .datatable-pager a {
+  color: white !important;
+}
+
+.ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li.active a {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  font-weight: bold;
 }

@@ -22,23 +22,23 @@
 .dashboard-cuerpo {
   display: flex;
   flex: 1; 
-  padding: 30px; /* Separación de los bordes de la pantalla */
-  gap: 20px; /* Separación exacta entre la tarjeta azul y la tabla blanca */
+  padding: 30px; 
+  gap: 20px; 
   background-color: #f4f7f9;
   
-  /* Obliga a las dos tarjetas a pegarse arriba del todo */
+ 
   align-items: flex-start; 
   
   overflow-y: auto; 
 }
 
-/* El hueco de la tarjeta izquierda */
+
 .dashboard-lateral {
   width: 250px; 
   flex-shrink: 0;
 }
 
-/* El hueco de la tabla derecha */
+
 .dashboard-contenido {
   flex: 1;
   padding: 0; 

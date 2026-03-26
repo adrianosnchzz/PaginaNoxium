@@ -11,82 +11,124 @@
         <option [ngValue]="100">100 registros/página</option>
       </select>
       <span class="text-muted small">total {{ totalRegistros }} registros.</span>
-      
       <input type="text" class="form-control form-control-sm" placeholder="Buscar y pulsar Enter..." [(ngModel)]="textoBusqueda" (keyup.enter)="buscarEnServidor()" style="width: 200px;">
     </div>
     
     <div class="d-flex align-items-center gap-3">
-      <div class="d-flex gap-1">
-        <button class="btn btn-outline-secondary btn-sm rounded-pill" style="font-size: 11px;">JSON</button>
-        <button class="btn btn-outline-secondary btn-sm rounded-pill" style="font-size: 11px;">XML</button>
-        <button class="btn btn-outline-secondary btn-sm rounded-pill" style="font-size: 11px;">CSV</button>
-      </div>
       
-      <div class="d-flex align-items-center gap-2 text-muted small">
-        <span>Página {{ currentPage }} de {{ totalPages }}</span>
-        <span>|</span>
+      <div class="position-relative">
+        <button class="btn btn-outline-primary btn-sm rounded-pill" style="font-size: 11px;" 
+                (click)="toggleMenuColumnas()">
+          Seleccionar Columnas 
+        </button>
         
-        <button class="btn btn-link text-muted p-0 text-decoration-none" 
-                [disabled]="currentPage === 1" 
-                (click)="cambiarPagina(1)" title="Primera página">&lt;&lt;</button>
-                
-        <button class="btn btn-link text-muted p-0 text-decoration-none" 
-                [disabled]="currentPage === 1" 
-                (click)="cambiarPagina(currentPage - 1)" title="Anterior">&lt;</button>
-                
-        <button class="btn btn-link text-muted p-0 text-decoration-none" 
-                [disabled]="currentPage === totalPages" 
-                (click)="cambiarPagina(currentPage + 1)" title="Siguiente">&gt;</button>
-                
-        <button class="btn btn-link text-muted p-0 text-decoration-none" 
-                [disabled]="currentPage === totalPages" 
-                (click)="cambiarPagina(totalPages)" title="Última página">&gt;&gt;</button>
+        <div *ngIf="mostrarMenuColumnas" 
+             class="position-absolute bg-white border rounded shadow-sm p-2" 
+             style="top: 100%; right: 0; z-index: 1000; min-width: 170px; margin-top: 5px;">
+          
+          <div class="form-check ms-2 mb-2 pb-2 border-bottom">
+            <input class="form-check-input" type="checkbox" id="chk-all" 
+                   [checked]="todasSeleccionadas" 
+                   (change)="toggleTodasColumnas($event)">
+            <label class="form-check-label fw-bold" style="font-size: 12px; cursor: pointer;" for="chk-all">
+              Seleccionar todas
+            </label>
+          </div>
+
+          <div *ngFor="let col of columnasExportar" class="form-check ms-2 mb-1">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="col.seleccionada" [id]="'chk-' + col.prop">
+            <label class="form-check-label user-select-none" style="font-size: 12px; cursor: pointer;" [for]="'chk-' + col.prop">
+              {{ col.name }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-1">
+        <button class="btn btn-outline-secondary btn-sm rounded-pill" style="font-size: 11px;" 
+                [disabled]="elementosSeleccionados.length === 0" (click)="exportarJSON()">
+          JSON
+        </button>
+        <button class="btn btn-outline-success btn-sm rounded-pill" style="font-size: 11px;" 
+                [disabled]="elementosSeleccionados.length === 0" (click)="exportarExcel()">
+          EXCEL
+        </button>
+        <button class="btn btn-outline-secondary btn-sm rounded-pill" style="font-size: 11px;" 
+                [disabled]="elementosSeleccionados.length === 0" (click)="exportarCSV()">
+          CSV
+        </button>
       </div>
     </div>
   </div>
 
   <div class="table-responsive">
-    <table class="table table-hover align-middle text-nowrap mb-0" style="font-size: 13px;">
-      <thead>
-        <tr class="cabecera-noxium">
-          <th class="text-center ps-3" style="width: 50px;">
-            <input type="checkbox" class="form-check-input m-0" (change)="alternarTodos($event)">
-          </th>
-          <th class="text-start">Id</th>
-          <th class="text-start">Nombre</th>
-          <th class="text-start">NumSerie</th>
-          <th class="text-start">Objeto</th>
-          <th class="text-start">IMEI</th>
-          <th class="text-center" style="width: 80px;">Status</th>
-          <th class="text-start">Server</th>
-          <th class="text-start">ServerRespaldo</th>
-          <th class="text-start pe-3">ServerFota</th>
-        </tr>
-      </thead>
+    <ngx-datatable
+      class="bootstrap"
+      [rows]="listaConcentradores"
+      [columnMode]="ColumnMode.force"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      rowHeight="auto"
+      [loadingIndicator]="cargando"
       
-      <tbody>
-        <tr *ngIf="cargando">
-          <td colspan="10" class="text-center py-4 text-muted">Cargando dispositivos...</td>
-        </tr>
+      [externalPaging]="true"
+      [count]="totalRegistros"
+      [offset]="currentPage - 1"
+      [limit]="pageSize"
+      (page)="setPage($event)"
+      
+      [externalSorting]="true"
+      [sorts]="sorts"
+      (sort)="onSort($event)"
+      
+      [selected]="elementosSeleccionados"
+      [selectionType]="SelectionType.checkbox"
+      (select)="onSelect($event)"
+    >
+      
+      <ngx-datatable-column
+        [width]="50"
+        [sortable]="false"
+        [canAutoResize]="false"
+        [draggable]="false"
+        [resizeable]="false"
+      >
+        <ng-template ngx-datatable-header-template let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+          <input type="checkbox" class="form-check-input m-0" [checked]="allRowsSelected" (change)="selectFn()" />
+        </ng-template>
+        <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+          <input type="checkbox" class="form-check-input m-0" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+        </ng-template>
+      </ngx-datatable-column>
 
-        <tr *ngFor="let concentrador of concentradoresFiltrados">
-          <td class="text-center ps-3">
-            <input type="checkbox" class="form-check-input m-0" [checked]="todosMarcados">
-          </td>
-          <td class="text-start">{{ concentrador.systemid }}</td>
-          <td class="text-start">{{ concentrador.nombre }}</td>
-          <td class="text-start">{{ concentrador.numeroserie }}</td>
-          <td class="text-start">{{ concentrador.objeto }}</td>
-          <td class="text-start text-muted">{{ concentrador.imei }}</td>
-          <td class="text-center align-middle">
-            <span *ngIf="concentrador.status === 0" title="ON" class="d-inline-block rounded-circle" style="width: 14px; height: 14px; background: #4ade80;"></span>
-            <span *ngIf="concentrador.status !== 0" title="OFF" class="d-inline-block rounded-circle" style="width: 14px; height: 14px; background: #f87171;"></span>
-          </td>
-          <td class="text-start">{{ concentrador.server }}</td>
-          <td class="text-start text-muted">{{ concentrador.server_backup }}</td>
-          <td class="text-start pe-3">{{ concentrador.server_fota }}</td>
-        </tr>
-      </tbody>
-    </table>
+      <ngx-datatable-column name="Id" prop="systemid" [width]="100"></ngx-datatable-column>
+      <ngx-datatable-column name="Nombre" prop="nombre"></ngx-datatable-column>
+      <ngx-datatable-column name="NumSerie" prop="numeroserie"></ngx-datatable-column>
+      <ngx-datatable-column name="Objeto" prop="objeto"></ngx-datatable-column>
+      
+      <ngx-datatable-column name="IMEI" prop="imei">
+        <ng-template let-value="value" ngx-datatable-cell-template>
+          <span class="text-muted">{{ value }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      
+      <ngx-datatable-column name="Status" prop="status" [width]="80" headerClass="text-center" cellClass="text-center align-middle">
+        <ng-template let-value="value" ngx-datatable-cell-template>
+          <span *ngIf="value === 0" title="ON" class="d-inline-block rounded-circle" style="width: 14px; height: 14px; background: #4ade80;"></span>
+          <span *ngIf="value !== 0" title="OFF" class="d-inline-block rounded-circle" style="width: 14px; height: 14px; background: #f87171;"></span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Server" prop="server"></ngx-datatable-column>
+      
+      <ngx-datatable-column name="ServerRespaldo" prop="server_backup">
+        <ng-template let-value="value" ngx-datatable-cell-template>
+          <span class="text-muted">{{ value }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      
+      <ngx-datatable-column name="ServerFota" prop="server_fota"></ngx-datatable-column>
+
+    </ngx-datatable>
   </div>
 </div>
