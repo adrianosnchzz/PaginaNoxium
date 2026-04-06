@@ -1,59 +1,14 @@
-# Noxiumpag
+Las cosas que he ido añadiendo:
+Tabla de concentradores
+He montado la tabla con ngx-datatable. La paginación y el ordenamiento los gestiona el servidor, no el front. También he añadido un buscador que filtra mandando el texto a la API al pulsar Enter.
+Selección y exportación
+Añadí checkboxes para seleccionar filas y un selector propio para elegir qué columnas quieres exportar. Con eso puedes descargar lo seleccionado en Excel, CSV o JSON. Los botones se desactivan solos si no tienes nada seleccionado.
+Login
+Pantalla de login con correo y contraseña. Si te equivocas sale un mensaje de error. Cuando entras bien te redirige a la tabla. La barra de navegación no aparece mientras estás en el login.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+Las cosas que he usado
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+ngx-datatable — para la tabla, me ha venido muy bien porque tiene la paginación y el ordenamiento integrados
+xlsx — para generar los archivos de Excel y CSV desde el front
+HttpClient de Angular — para las llamadas a la API
+Bootstrap 5 — para los estilos y el layout
