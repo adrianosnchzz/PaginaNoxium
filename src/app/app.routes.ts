@@ -6,7 +6,7 @@ export const routes: Routes = [
   
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   
-  { path: 'login', component: LoginComponent }, // <-- Cambio 2: Añadido "Component"
+  { path: 'login', component: LoginComponent }, 
   
   { path: 'concentradores', component: TablaConcentradores }
 ];

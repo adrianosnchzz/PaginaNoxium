@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NgxDatatableModule, ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import * as XLSX from 'xlsx';
+import { Router } from '@angular/router';
 
 export interface ConcentradorData {
   systemid: string;
@@ -28,6 +29,7 @@ export class TablaConcentradores implements OnInit {
   
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   textoBusqueda: string = ''; 
 
@@ -46,8 +48,8 @@ export class TablaConcentradores implements OnInit {
   SelectionType = SelectionType;
   elementosSeleccionados: ConcentradorData[] = []; 
 
-  // --- VARIABLES DEL MENÚ DE COLUMNAS ---
-  mostrarMenuColumnas: boolean = false; 
+  mostrarMenuColumnas: boolean = false;
+  mostrarMenuJson: boolean = false; 
   
   columnasExportar = [
     { prop: 'systemid', name: 'Id', seleccionada: true },
@@ -65,7 +67,10 @@ export class TablaConcentradores implements OnInit {
     this.cargarDatosDeLaAPI();
   }
 
-  // --- FUNCIONES DEL MENÚ DE COLUMNAS ---
+  cerrarSesion() {
+    this.router.navigate(['/login']); 
+  }
+
   toggleMenuColumnas() {
     this.mostrarMenuColumnas = !this.mostrarMenuColumnas;
   }
@@ -74,7 +79,6 @@ export class TablaConcentradores implements OnInit {
     return this.columnasExportar.every(c => c.seleccionada);
   }
 
- 
   toggleTodasColumnas(event: any) {
     const marcado = event.target.checked;
     this.columnasExportar.forEach(c => c.seleccionada = marcado);
@@ -166,55 +170,104 @@ export class TablaConcentradores implements OnInit {
     });
   }
 
- // --- FUNCIONES DE EXPORTACIÓN ---
-
-  exportarJSON() {
-    if (this.elementosSeleccionados.length === 0) return;
-    
-    
-    if (!confirm('¿Estás seguro de que deseas descargar el archivo JSON?')) return;
-
-    const datosFiltrados = this.prepararDatosParaExportar();
-    const dataStr = JSON.stringify(datosFiltrados, null, 2);
+  // --- FUNCIÓN GENÉRICA PARA DESCARGAR JSON ---
+  private generarDescargaJSON(datos: any, nombreArchivo: string) {
+    const dataStr = JSON.stringify(datos, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
-    
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'concentradores_seleccionados.json';
+    a.download = nombreArchivo;
     a.click(); 
     window.URL.revokeObjectURL(url); 
     this.mostrarMenuColumnas = false; 
   }
 
+  // --- FORMATOS DE JSON ---
+
+  exportarJsonAmbitos() {
+    if (!confirm('¿Descargar JSON (Formato Ámbitos SDM)?')) return;
+    
+    const formato = {
+      records: this.elementosSeleccionados.length,
+      type: "ambitos",
+      key: "EMASA",
+      data: this.elementosSeleccionados.map(fila => fila.systemid),
+      success: true,
+      msg: `Total ${this.elementosSeleccionados.length} rows`
+    };
+    
+    this.generarDescargaJSON(formato, 'importacion_a_ambitos_sdm.json');
+  }
+
+  exportarJsonAPI() {
+    if (!confirm('¿Descargar JSON (Formato API)?')) return;
+    
+    const formato = this.elementosSeleccionados.map(fila => ({
+      READING_PERIOD: "00:10",
+      READING_PERIOD_B: "00:00",
+      SENDING_PERIOD: "01:00",
+      READING_PERIOD_Z: "00:10",
+      SENDING_PERIOD_Z: "03:00",
+      RESENDING_PERIOD: "00:05",
+      DEVICE_ID: fila.systemid,
+      OID_CLASS: fila.objeto || "15303",
+      SERIAL_NUMBER: fila.numeroserie,
+      HOST1: fila.server || "iot.noxium.es:8093",
+      HOST2: fila.server_backup || "iot.noxium.es:8092",
+      HOST3: fila.server_fota || "iot.noxium.es:8093",
+      IMEI: fila.imei,
+      PROFILE: { ND: 0 }
+    }));
+
+    this.generarDescargaJSON(formato, 'importacion_a_api.json');
+  }
+
+  exportarJsonSDM() {
+    if (!confirm('¿Descargar JSON (Formato SDM)?')) return;
+    
+    const formato = {
+      records: this.elementosSeleccionados.length,
+      data: this.elementosSeleccionados.map(fila => ({
+        READING_PERIOD: "00:10",
+        READING_PERIOD_B: "00:00",
+        SENDING_PERIOD: "01:00",
+        READING_PERIOD_Z: "00:10",
+        SENDING_PERIOD_Z: "03:00",
+        RESENDING_PERIOD: "00:05",
+        DEVICE_ID: fila.systemid, 
+        OID_CLASS: fila.objeto || "15303",
+        SERIAL_NUMBER: fila.numeroserie,
+        HOST1: fila.server || "iot.noxium.es:8093",
+        HOST2: fila.server_backup || "iot.noxium.es:8092",
+        HOST3: fila.server_fota || "iot.noxium.es:8093",
+        IMEI: fila.imei
+      }))
+    };
+
+    this.generarDescargaJSON(formato, 'importacion_a_sdm.json');
+  }
+
+  // --- FUNCIONES EXCEL Y CSV ---
+
   exportarExcel() {
     if (this.elementosSeleccionados.length === 0) return;
-    
-    
     if (!confirm('¿Estás seguro de que deseas generar y descargar el archivo EXCEL?')) return;
-
     const datosFiltrados = this.prepararDatosParaExportar();
-
     const worksheet = XLSX.utils.json_to_sheet(datosFiltrados);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Concentradores');
-    
     XLSX.writeFile(workbook, 'concentradores_seleccionados.xlsx');
     this.mostrarMenuColumnas = false; 
   }
 
   exportarCSV() {
     if (this.elementosSeleccionados.length === 0) return;
-    
-   
     if (!confirm('¿Estás seguro de que deseas descargar el archivo CSV?')) return;
-
     const datosFiltrados = this.prepararDatosParaExportar();
-
     const worksheet = XLSX.utils.json_to_sheet(datosFiltrados);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Concentradores');
-    
     XLSX.writeFile(workbook, 'concentradores_seleccionados.csv');
     this.mostrarMenuColumnas = false; 
   }

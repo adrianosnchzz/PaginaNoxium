@@ -13,7 +13,7 @@ export class AuthService {
   login(email: string, password: string): Observable<any> {
     return this.http.post<any>(this.apiUrl, { email, password }).pipe(
       tap(res => {
-        // Guardamos el token en el navegador
+    
         if (res && res.token) {
           localStorage.setItem('auth_token', res.token);
         }

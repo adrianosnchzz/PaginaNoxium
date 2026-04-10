@@ -1,12 +1,11 @@
 
 
-/* Efecto turquesa */
 .input-noxium:focus {
   border-color: #00a8cc;
   box-shadow: 0 0 0 0.25rem rgba(0, 168, 204, 0.25);
 }
 
-/* Colores corporativos para el botón */
+
 .btn-noxium {
   background-color: #004c8c;
   color: #ffffff;

@@ -4,45 +4,42 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
 
-
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './login.html', 
+  templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
-  
-  // Variables mapeadas a tu HTML
+
   correo: string = '';
   contrasena: string = '';
   mensajeError: string = '';
   cargando: boolean = false;
+  mostrarContrasena: boolean = false; 
 
   private authService = inject(AuthService);
   private router = inject(Router);
 
   entrar() {
+    this.mensajeError = '';
+
     if (!this.correo || !this.contrasena) {
       this.mensajeError = 'Por favor, rellena todos los campos';
       return;
     }
 
     this.cargando = true;
-    
-    
+
     this.authService.login(this.correo, this.contrasena).subscribe({
-      next: (res) => {
-        console.log('¡Login exitoso!', res);
+      next: () => {
         this.cargando = false;
-        // Cambia la ruta si tu tabla se llama distinto
-        this.router.navigate(['/concentradores']); 
+        this.router.navigate(['/concentradores']);
       },
-      error: (err) => {
-        console.error('Error de login:', err);
+      error: () => {
         this.cargando = false;
-        this.mensajeError = 'Credenciales incorrectas';
+        this.mensajeError = 'Correo o contraseña incorrectos'; 
       }
     });
   }
