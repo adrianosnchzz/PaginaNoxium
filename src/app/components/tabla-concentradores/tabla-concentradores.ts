@@ -50,6 +50,7 @@ export class TablaConcentradores implements OnInit {
 
   mostrarMenuColumnas: boolean = false;
   mostrarMenuJson: boolean = false; 
+  mostrarMenuCsv: boolean = false; 
   
   columnasExportar = [
     { prop: 'systemid', name: 'Id', seleccionada: true },
@@ -170,7 +171,7 @@ export class TablaConcentradores implements OnInit {
     });
   }
 
-  // --- FUNCIÓN GENÉRICA PARA DESCARGAR JSON ---
+  // --- DESCARGAR JSON ---
   private generarDescargaJSON(datos: any, nombreArchivo: string) {
     const dataStr = JSON.stringify(datos, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -180,7 +181,7 @@ export class TablaConcentradores implements OnInit {
     a.download = nombreArchivo;
     a.click(); 
     window.URL.revokeObjectURL(url); 
-    this.mostrarMenuColumnas = false; 
+    this.mostrarMenuJson = false; 
   }
 
   // --- FORMATOS DE JSON ---
@@ -248,27 +249,73 @@ export class TablaConcentradores implements OnInit {
     this.generarDescargaJSON(formato, 'importacion_a_sdm.json');
   }
 
-  // --- FUNCIONES EXCEL Y CSV ---
-
-  exportarExcel() {
-    if (this.elementosSeleccionados.length === 0) return;
-    if (!confirm('¿Estás seguro de que deseas generar y descargar el archivo EXCEL?')) return;
-    const datosFiltrados = this.prepararDatosParaExportar();
-    const worksheet = XLSX.utils.json_to_sheet(datosFiltrados);
+  // --- DESCARGAR CSV ---
+  private generarDescargaCSV(datos: any[], nombreArchivo: string) {
+    const worksheet = XLSX.utils.json_to_sheet(datos);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Concentradores');
-    XLSX.writeFile(workbook, 'concentradores_seleccionados.xlsx');
-    this.mostrarMenuColumnas = false; 
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+    XLSX.writeFile(workbook, nombreArchivo);
+    this.mostrarMenuCsv = false; 
   }
 
-  exportarCSV() {
-    if (this.elementosSeleccionados.length === 0) return;
-    if (!confirm('¿Estás seguro de que deseas descargar el archivo CSV?')) return;
-    const datosFiltrados = this.prepararDatosParaExportar();
-    const worksheet = XLSX.utils.json_to_sheet(datosFiltrados);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Concentradores');
-    XLSX.writeFile(workbook, 'concentradores_seleccionados.csv');
-    this.mostrarMenuColumnas = false; 
+  // --- FORMATOS DE CSV ---
+
+  exportarCsvFota() {
+    if (!confirm('¿Descargar CSV (Formato Devices FOTA)?')) return;
+    
+    const formato = this.elementosSeleccionados.map((fila, i) => ({
+      code: `DD0000000${1000 + i}`, 
+      type: 1,
+      description: "",
+      status: "enabled",
+      name: fila.systemid,
+      device_id: fila.systemid,
+      serial_number: fila.numeroserie,
+      metadata: "{}",
+      created_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      client_id: 6
+    }));
+
+    this.generarDescargaCSV(formato, 'importacion_devices_fota.csv');
+  }
+
+  exportarCsvSda() {
+    if (!confirm('¿Descargar CSV (Formato Devices SDA)?')) return;
+    
+    const formato = this.elementosSeleccionados.map((fila, i) => ({
+      code: `DD0000000${1000 + i}`, 
+      type: 1,
+      description: "",
+      status: "disabled",
+      name: fila.systemid,
+      device_id: fila.systemid,
+      serial_number: fila.numeroserie,
+      metadata: "{}",
+      created_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      client_id: 1
+    }));
+
+    this.generarDescargaCSV(formato, 'importacion_devices_sda.csv');
+  }
+
+  exportarCsvSdaGeoblau() {
+    if (!confirm('¿Descargar CSV (Formato Devices SDA Geoblau)?')) return;
+    
+    const formato = this.elementosSeleccionados.map((fila, i) => ({
+      code: `DD0000000${1000 + i}`, 
+      type: 1,
+      description: "",
+      status: "disabled",
+      situation: "test",
+      location: "warehouse",
+      name: fila.systemid,
+      device_id: fila.systemid,
+      serial_number: fila.numeroserie,
+      metadata: "{}",
+      created_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      client_id: 1
+    }));
+
+    this.generarDescargaCSV(formato, 'importacion_devices_sda_geoblau.csv');
   }
 }

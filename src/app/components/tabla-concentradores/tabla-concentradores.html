@@ -59,7 +59,7 @@
           <button class="btn btn-outline-secondary btn-sm rounded-pill d-flex align-items-center gap-1" 
                   style="font-size: 11px;" 
                   [disabled]="elementosSeleccionados.length === 0" 
-                  (click)="mostrarMenuJson = !mostrarMenuJson">
+                  (click)="mostrarMenuJson = !mostrarMenuJson; mostrarMenuCsv = false">
             JSON
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -69,20 +69,32 @@
           <div *ngIf="mostrarMenuJson" 
                class="position-absolute bg-white border rounded shadow-sm py-2" 
                style="top: 100%; right: 0; z-index: 1000; min-width: 170px; margin-top: 5px;">
-            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarJsonAmbitos(); mostrarMenuJson = false">Formato Ámbitos SDM</a>
-            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarJsonAPI(); mostrarMenuJson = false">Formato API</a>
-            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarJsonSDM(); mostrarMenuJson = false">Formato SDM</a>
+            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarJsonAmbitos()">Formato Ámbitos SDM</a>
+            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarJsonAPI()">Formato API</a>
+            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarJsonSDM()">Formato SDM</a>
           </div>
         </div>
 
-        <button class="btn btn-outline-success btn-sm rounded-pill" style="font-size: 11px;" 
-                [disabled]="elementosSeleccionados.length === 0" (click)="exportarExcel()">
-          EXCEL
-        </button>
-        <button class="btn btn-outline-secondary btn-sm rounded-pill" style="font-size: 11px;" 
-                [disabled]="elementosSeleccionados.length === 0" (click)="exportarCSV()">
-          CSV
-        </button>
+        <div class="position-relative">
+          <button class="btn btn-outline-secondary btn-sm rounded-pill d-flex align-items-center gap-1" 
+                  style="font-size: 11px;" 
+                  [disabled]="elementosSeleccionados.length === 0" 
+                  (click)="mostrarMenuCsv = !mostrarMenuCsv; mostrarMenuJson = false">
+            CSV
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </button>
+          
+          <div *ngIf="mostrarMenuCsv" 
+               class="position-absolute bg-white border rounded shadow-sm py-2" 
+               style="top: 100%; right: 0; z-index: 1000; min-width: 200px; margin-top: 5px;">
+            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarCsvFota()">Formato FOTA</a>
+            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarCsvSda()">Formato SDA</a>
+            <a class="dropdown-item px-3 py-1" style="font-size: 12px; cursor: pointer;" (click)="exportarCsvSdaGeoblau()">Formato SDA Geoblau</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
