@@ -32,6 +32,8 @@ export class TablaConcentradores implements OnInit {
   private router = inject(Router);
 
   textoBusqueda: string = ''; 
+  temporizadorBusqueda: any; 
+  ambitoSeleccionado: string = 'lab'; 
 
   totalPages: number = 0;
   currentPage: number = 1;
@@ -40,7 +42,6 @@ export class TablaConcentradores implements OnInit {
   orderBy: string = '';  
   orderDir: string = ''; 
   sorts: any[] = []; 
-
   listaConcentradores: ConcentradorData[] = [];
   cargando: boolean = true; 
 
@@ -85,11 +86,26 @@ export class TablaConcentradores implements OnInit {
     this.columnasExportar.forEach(c => c.seleccionada = marcado);
   }
 
+  cambiarAmbito() {
+    this.currentPage = 1;
+    this.cargarDatosDeLaAPI();
+  }
+
+  
+  alEscribirBusqueda() {
+    clearTimeout(this.temporizadorBusqueda); 
+    
+    this.temporizadorBusqueda = setTimeout(() => { 
+      this.currentPage = 1; 
+      this.cargarDatosDeLaAPI();
+    }, 250); 
+  }
+
   cargarDatosDeLaAPI() {
     this.cargando = true;
     this.cdr.detectChanges();
 
-    let url = `https://e-sda.noxium.es/admin-api/device?ambito=lab&page=${this.currentPage}&limit=${this.pageSize}`;
+    let url = `https://e-sda.noxium.es/admin-api/device?ambito=${this.ambitoSeleccionado}&page=${this.currentPage}&limit=${this.pageSize}`;
 
     if (this.textoBusqueda && this.textoBusqueda.trim() !== '') {
       url += `&filter=${this.textoBusqueda}`;
@@ -116,11 +132,6 @@ export class TablaConcentradores implements OnInit {
         this.cdr.detectChanges();
       }
     });
-  }
-
-  buscarEnServidor() {
-    this.currentPage = 1; 
-    this.cargarDatosDeLaAPI();
   }
 
   setPage(pageInfo: any) {
@@ -171,7 +182,6 @@ export class TablaConcentradores implements OnInit {
     });
   }
 
-  // --- DESCARGAR JSON ---
   private generarDescargaJSON(datos: any, nombreArchivo: string) {
     const dataStr = JSON.stringify(datos, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -183,8 +193,6 @@ export class TablaConcentradores implements OnInit {
     window.URL.revokeObjectURL(url); 
     this.mostrarMenuJson = false; 
   }
-
-  // --- FORMATOS DE JSON ---
 
   exportarJsonAmbitos() {
     if (!confirm('¿Descargar JSON (Formato Ámbitos SDM)?')) return;
@@ -249,7 +257,6 @@ export class TablaConcentradores implements OnInit {
     this.generarDescargaJSON(formato, 'importacion_a_sdm.json');
   }
 
-  // --- DESCARGAR CSV ---
   private generarDescargaCSV(datos: any[], nombreArchivo: string) {
     const worksheet = XLSX.utils.json_to_sheet(datos);
     const workbook = XLSX.utils.book_new();
@@ -257,8 +264,6 @@ export class TablaConcentradores implements OnInit {
     XLSX.writeFile(workbook, nombreArchivo);
     this.mostrarMenuCsv = false; 
   }
-
-  // --- FORMATOS DE CSV ---
 
   exportarCsvFota() {
     if (!confirm('¿Descargar CSV (Formato Devices FOTA)?')) return;
